@@ -33,3 +33,12 @@ palavras_chave:
   - mcp
   - prompt
   - vibe coding
+
+# Itens com estes termos no título ou resumo são descartados (spam), em qualquer fonte.
+palavras_bloqueadas:
+  - buy old github accounts
+  - buy github accounts
+  - buy accounts
+  - casino
+  - betting
+  - crypto airdrop

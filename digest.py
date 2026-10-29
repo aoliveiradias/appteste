@@ -9,12 +9,16 @@ import os
 import re
 import sys
 import time
+import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-import feedparser
-import requests
+# O Python do macOS usa LibreSSL e o urllib3 avisa disso a cada execução; é inofensivo aqui.
+warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
+
+import feedparser  # noqa: E402
+import requests  # noqa: E402
 import yaml
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -97,12 +101,17 @@ def build_keyword_regex(keywords: list[str]) -> re.Pattern:
 def filter_items(items: list[dict], cfg: dict, hours: float) -> list[dict]:
     cutoff = time.time() - hours * 3600
     keyword_re = build_keyword_regex(cfg["palavras_chave"])
+    blocked = cfg.get("palavras_bloqueadas") or []
+    blocked_re = build_keyword_regex(blocked) if blocked else None
     seen, per_source, result = set(), {}, []
 
     for item in sorted(items, key=lambda i: i["ts"] or 0, reverse=True):
         if item["ts"] is None or item["ts"] < cutoff:
             continue
-        if item["filtrar"] and not keyword_re.search(f"{item['titulo']} {item['resumo']}"):
+        text = f"{item['titulo']} {item['resumo']}"
+        if blocked_re and blocked_re.search(text):
+            continue
+        if item["filtrar"] and not keyword_re.search(text):
             continue
         key = normalize_url(item["link"])
         if key in seen:
@@ -120,12 +129,13 @@ def filter_items(items: list[dict], cfg: dict, hours: float) -> list[dict]:
 def format_message(items: list[dict], failures: list[str], category_order: list[str]) -> list[str]:
     """Monta a mensagem em HTML do Telegram, dividida em partes de até TELEGRAM_LIMIT."""
     today = datetime.now(timezone.utc).astimezone().strftime("%d/%m/%Y")
-    # Cada "unidade" nunca é quebrada entre mensagens; o título da categoria
-    # vai junto com o primeiro item para não ficar sozinho no fim de uma parte.
-    units = [f"<b>🤖 IA + Dev — {today}</b>\n"]
+    # Cada "unidade" (texto, categoria) nunca é quebrada entre mensagens; o título
+    # da categoria vai junto com o primeiro item para não ficar sozinho no fim de uma
+    # parte, e é repetido quando a categoria continua na parte seguinte.
+    units = [(f"<b>🤖 IA + Dev — {today}</b>", None)]
 
     if not items:
-        units.append("Nada novo nas últimas horas.")
+        units.append(("\nNada novo nas últimas horas.", None))
     for category in category_order:
         group = [i for i in items if i["categoria"] == category]
         if not group:
@@ -136,17 +146,19 @@ def format_message(items: list[dict], failures: list[str], category_order: list[
             line = f'• <a href="{href}">{title}</a> — <i>{html.escape(item["fonte"])}</i>'
             if n == 0:
                 line = f"\n<b>{html.escape(category)}</b>\n{line}"
-            units.append(line)
+            units.append((line, category))
 
     if failures:
-        units.append(f"\n<i>⚠️ Não consegui ler: {html.escape(', '.join(failures))}</i>")
+        units.append((f"\n<i>⚠️ Não consegui ler: {html.escape(', '.join(failures))}</i>", None))
 
     chunks, current = [], ""
-    for unit in units:
+    for unit, category in units:
         if current and len(current) + len(unit) + 1 > TELEGRAM_LIMIT:
             chunks.append(current.rstrip())
-            current = unit.lstrip("\n") + "\n"
-            continue
+            current = ""
+            unit = unit.lstrip("\n")
+            if category and not unit.startswith("<b>"):
+                unit = f"<b>{html.escape(category)} (cont.)</b>\n{unit}"
         current += unit + "\n"
     if current.strip():
         chunks.append(current.rstrip())

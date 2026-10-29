@@ -35,7 +35,7 @@
 - nome: "dev.to #llm"
   url: https://dev.to/feed/tag/llm
   categoria: Comunidades
-  filtrar: false
+  filtrar: true
 
 - nome: r/LocalLLaMA
   url: https://www.reddit.com/r/LocalLLaMA/.rss
