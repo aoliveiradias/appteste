@@ -1,0 +1,35 @@
+# Janela de tempo: só entram itens publicados nas últimas N horas.
+# 26h dá uma folga caso o GitHub Actions atrase um pouco.
+janela_horas: 26
+
+max_por_fonte: 5
+max_total: 30
+
+# Palavras-chave para fontes com filtrar: true (comparadas como palavra inteira,
+# sem diferenciar maiúsculas, no título e no resumo).
+palavras_chave:
+  - ai
+  - ia
+  - llm
+  - llms
+  - genai
+  - inteligência artificial
+  - artificial intelligence
+  - machine learning
+  - agent
+  - agents
+  - agente
+  - agentes
+  - claude
+  - anthropic
+  - gpt
+  - openai
+  - chatgpt
+  - gemini
+  - copilot
+  - cursor
+  - codex
+  - rag
+  - mcp
+  - prompt
+  - vibe coding

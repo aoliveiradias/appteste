@@ -1,0 +1,73 @@
+# Fontes do resumo diário.
+# filtrar: true -> só entram itens que batem com as palavras-chave do config.yaml
+# (use em fontes generalistas; blogs que já são só de IA podem ficar false).
+
+- nome: OpenAI News
+  url: https://openai.com/news/rss.xml
+  categoria: Empresas de IA
+  filtrar: false
+
+- nome: GitHub Blog (AI & ML)
+  url: https://github.blog/ai-and-ml/feed/
+  categoria: Empresas de IA
+  filtrar: false
+
+- nome: Google AI Blog
+  url: https://blog.google/technology/ai/rss/
+  categoria: Empresas de IA
+  filtrar: false
+
+- nome: Hugging Face Blog
+  url: https://huggingface.co/blog/feed.xml
+  categoria: Empresas de IA
+  filtrar: false
+
+- nome: Hacker News
+  url: https://hnrss.org/newest?q=AI+OR+LLM+OR+Claude+OR+GPT&points=50
+  categoria: Comunidades
+  filtrar: true
+
+- nome: "dev.to #ai"
+  url: https://dev.to/feed/tag/ai
+  categoria: Comunidades
+  filtrar: true
+
+- nome: "dev.to #llm"
+  url: https://dev.to/feed/tag/llm
+  categoria: Comunidades
+  filtrar: false
+
+- nome: r/LocalLLaMA
+  url: https://www.reddit.com/r/LocalLLaMA/.rss
+  categoria: Comunidades
+  filtrar: false
+
+- nome: Simon Willison
+  url: https://simonwillison.net/atom/everything/
+  categoria: Newsletters e autores
+  filtrar: true
+
+- nome: Latent Space
+  url: https://www.latent.space/feed
+  categoria: Newsletters e autores
+  filtrar: false
+
+- nome: The Pragmatic Engineer
+  url: https://newsletter.pragmaticengineer.com/feed
+  categoria: Newsletters e autores
+  filtrar: true
+
+- nome: TabNews
+  url: https://www.tabnews.com.br/recentes/rss
+  categoria: Em português
+  filtrar: true
+
+- nome: Alura
+  url: https://www.alura.com.br/artigos/rss
+  categoria: Em português
+  filtrar: true
+
+- nome: Canaltech (IA)
+  url: https://canaltech.com.br/rss/inteligencia-artificial/
+  categoria: Em português
+  filtrar: false
